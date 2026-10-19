@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: mysql_practicas
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: mi_base_de_datos
+      MYSQL_USER: usuario_practicas
+      MYSQL_PASSWORD: password_practicas
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./scripts:/docker-entrypoint-initdb.d
+  web:
+    image: php:8.2-apache
+    container_name: php_practicas
+    restart: always
+    ports:
+      - "8080:80"
+    volumes:
+      - ./src:/var/www/html 
+    depends_on:
+      - db
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin_practicas
+    restart: always
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: rootpassword
+    depends_on:
+      - db
+
+volumes:
+  db_data:
